@@ -1,0 +1,17 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:entry title="File to Replace" field="filePath">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="String to Find" field="stringToFind">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="String to Replace" field="stringToReplace">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="修改xml节点值" field="xmlNodeString">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="修改后的值" field="newNodeValue">
+    <f:textbox />
+  </f:entry>
+</j:jelly>
