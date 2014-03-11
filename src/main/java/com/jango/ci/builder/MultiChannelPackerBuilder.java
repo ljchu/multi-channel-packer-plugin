@@ -222,6 +222,13 @@ public class MultiChannelPackerBuilder extends Builder {
 			return FormValidation.ok();
 		}
 
+		public FormValidation doCheckStringToFind(@QueryParameter String value)
+				throws IOException, ServletException {
+			if (value.length() == 0)
+				return FormValidation.warning("如若选择\"文本替换\"，请填写需要查找的字符串.");
+			return FormValidation.ok();
+		}
+
 		public boolean isApplicable(Class<? extends AbstractProject> aClass) {
 			return true;
 		}
