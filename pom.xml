@@ -8,7 +8,7 @@
 	</parent>
 
 	<groupId>com.jango.ci</groupId>
-	<artifactId>MultiChannelPacker</artifactId>
+	<artifactId>MultiChannelPacker-plugin</artifactId>
 	<packaging>hpi</packaging>
 	<repositories>
 		<repository>
