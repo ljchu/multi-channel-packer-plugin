@@ -1,17 +1,26 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" >
   <f:entry title="File to Replace" field="filePath">
     <f:textbox />
   </f:entry>
-  <f:entry title="String to Find" field="stringToFind">
+  
+  <f:entry field="choice" title="Choice">
+        <f:select/>
+    </f:entry>
+  <f:entry title="节点名称" field="xmlNodeName">
     <f:textbox />
   </f:entry>
-  <f:entry title="String to Replace" field="stringToReplace">
+  <f:entry title="属性名称" field="xmlAttributeName">
     <f:textbox />
   </f:entry>
-  <f:entry title="修改xml节点值" field="xmlNodeString">
+    <f:entry title="属性值" field="xmlAttributeValue">
     <f:textbox />
   </f:entry>
-  <f:entry title="修改后的值" field="newNodeValue">
+  <f:entry title="需要替换的字符串" field="stringToFind">
     <f:textbox />
   </f:entry>
+    <f:entry title="修改后的文本值" field="newValue">
+    <f:textbox />
+  </f:entry>
+      
 </j:jelly>
+

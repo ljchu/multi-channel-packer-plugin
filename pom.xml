@@ -4,30 +4,18 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.509.4</version><!-- which version of Jenkins is this plugin 
-			built against? -->
+		<version>1.509.4</version>
 	</parent>
 
 	<groupId>com.jango.ci</groupId>
-	<artifactId>AndroidMultiPacker</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<artifactId>MultiChannelPacker</artifactId>
 	<packaging>hpi</packaging>
-
-	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
-		artifacts that we need -->
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.7.2</version>
-		</dependency>
-	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>
@@ -35,4 +23,5 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<version>1.0</version>
 </project>

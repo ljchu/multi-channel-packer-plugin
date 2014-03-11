@@ -10,10 +10,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+/**
+ * 
+ * @author Jango Chu
+ * 
+ */
 public class ReplaceStrInFile {
 	private static BufferedReader bufread;
 	private static int aIndex;
-
+	/**
+	 * 
+	 * @param filename
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public static String readFile(File filename) throws FileNotFoundException,
 			IOException {
 		StringBuffer readStrBuffer = new StringBuffer();
@@ -29,19 +40,32 @@ public class ReplaceStrInFile {
 		bufread.close();
 		return readStrBuffer.toString();
 	}
-
+	/**
+	 * 
+	 * @param filename
+	 * @param fileContent
+	 * @return
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
 	public static boolean writeFile(File filename, String fileContent)
 			throws IOException, FileNotFoundException {
 		OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(
 				filename), "UTF-8");
-		BufferedWriter bufferedWriter =null; 
+		BufferedWriter bufferedWriter = null;
 		bufferedWriter = new BufferedWriter(write);
 		bufferedWriter.write(fileContent);
 		bufferedWriter.close();
 		write.close();
 		return true;
 	}
-
+	/**
+	 * 
+	 * @param filePath
+	 * @param srcString
+	 * @param dstString
+	 * @return
+	 */
 	public boolean replaceInFile(String filePath, String srcString,
 			String dstString) {
 		File filename = new File(filePath);
@@ -69,7 +93,13 @@ public class ReplaceStrInFile {
 		}
 		return false;
 	}
-
+	/**
+	 * 
+	 * @param from
+	 * @param to
+	 * @param source
+	 * @return
+	 */
 	public static String replace(String from, String to, String source) {
 		if (source == null || from == null || to == null)
 			return null;
