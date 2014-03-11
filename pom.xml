@@ -10,6 +10,15 @@
 	<groupId>com.jango.ci</groupId>
 	<artifactId>MultiChannelPacker-plugin</artifactId>
 	<packaging>hpi</packaging>
+	
+	<dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.lib</groupId>
+            <artifactId>envinject-lib</artifactId>
+            <version>1.16</version>
+        </dependency>
+    </dependencies>
+	
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>

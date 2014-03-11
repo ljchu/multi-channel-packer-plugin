@@ -1,5 +1,6 @@
 package com.jango.ci.builder;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractDescribableImpl;
@@ -10,16 +11,22 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
 import javax.servlet.ServletException;
+
 import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
 import com.jango.ci.util.ModifyXml;
 import com.jango.ci.util.ReplaceStrInFile;
+import com.jango.ci.util.EnvResolver;
 
 /**
  * 
@@ -41,7 +48,6 @@ public class MultiChannelPackerBuilder extends Builder {
 		choiceList.put("根据节点名称、属性名称，修改属性值", 3);
 		choiceList.put("根据节点名称、属性名称、属性值，修改属性值", 4);
 		choiceList.put("根据节点名称、属性名称、属性值，修改节点文本", 5);
-
 	}
 
 	@DataBoundConstructor
@@ -81,20 +87,48 @@ public class MultiChannelPackerBuilder extends Builder {
 		return xmlAttributeValue;
 	}
 
+	public String getNewValue() {
+		return newValue;
+	}
+
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) {
+
+		EnvVars envVars = new EnvVars();
+		try {
+			envVars = build.getEnvironment(listener);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		boolean result = false;
-		ModifyXml modifyXml = new ModifyXml();
+		String filePathChanged = EnvResolver.changeStringWithEnv(envVars,
+				filePath);
+		String newValueChanged = EnvResolver.changeStringWithEnv(envVars,
+				newValue);
+		String stringToFindChanged = EnvResolver.changeStringWithEnv(envVars,
+				stringToFind);
+		String xmlNodeNameChanged = EnvResolver.changeStringWithEnv(envVars,
+				xmlNodeName);
+		String xmlAttributeNameChanged = EnvResolver.changeStringWithEnv(
+				envVars, xmlAttributeName);
+		String xmlAttributeValueChanged = EnvResolver.changeStringWithEnv(
+				envVars, xmlAttributeValue);
+
 		switch (choiceList.get(choice)) {
 		case 1: {
 			ReplaceStrInFile re = new ReplaceStrInFile();
-			result = re.replaceInFile(filePath, stringToFind, newValue);
+			result = re.replaceInFile(filePathChanged, stringToFindChanged,
+					newValueChanged);
 
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成文件替换在" + filePath + "文件中，将" + stringToFind
-								+ "字符串替换成了" + newValue + "！");
+						"[INFO]:完成文件替换在" + filePathChanged + "文件中，将"
+								+ stringToFindChanged + "字符串替换成了"
+								+ newValueChanged + "！");
 				return true;
 			} else {
 				listener.getLogger().println(
@@ -103,13 +137,13 @@ public class MultiChannelPackerBuilder extends Builder {
 			}
 		}
 		case 2: {
-
-			result = modifyXml.modifyNodeTextByTagName(filePath, xmlNodeName,
-					newValue);
+			result = ModifyXml.modifyNodeTextByTagName(filePathChanged,
+					xmlNodeNameChanged, newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePath + "文件中，将" + xmlNodeName
-								+ "的文本修改成了了" + newValue + "！");
+						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+								+ xmlNodeNameChanged + "的文本修改成了了"
+								+ newValueChanged + "！");
 				return true;
 			} else {
 				listener.getLogger().println(
@@ -118,12 +152,14 @@ public class MultiChannelPackerBuilder extends Builder {
 			}
 		}
 		case 3: {
-			result = modifyXml.modifyAttributeValueByTagNameAndAttribute(
-					filePath, xmlNodeName, xmlAttributeName, newValue);
+			result = ModifyXml.modifyAttributeValueByTagNameAndAttribute(
+					filePathChanged, xmlNodeNameChanged,
+					xmlAttributeNameChanged, newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePath + "文件中，将" + xmlNodeName
-								+ "的文本修改成了了" + newValue + "！");
+						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+								+ xmlNodeNameChanged + "的文本修改成了了"
+								+ newValueChanged + "！");
 				return true;
 			} else {
 				listener.getLogger().println(
@@ -132,15 +168,17 @@ public class MultiChannelPackerBuilder extends Builder {
 			}
 		}
 		case 4: {
-			result = modifyXml
+			result = ModifyXml
 					.modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
-							filePath, xmlNodeName, xmlAttributeName,
-							xmlAttributeValue, newValue);
+							filePathChanged, xmlNodeNameChanged,
+							xmlAttributeNameChanged, xmlAttributeValueChanged,
+							newValueChanged);
 
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePath + "文件中，将" + xmlNodeName
-								+ "的文本修改成了了" + newValue + "！");
+						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+								+ xmlNodeNameChanged + "的文本修改成了了"
+								+ newValueChanged + "！");
 				return true;
 			} else {
 				listener.getLogger().println(
@@ -149,14 +187,16 @@ public class MultiChannelPackerBuilder extends Builder {
 			}
 		}
 		case 5: {
-			result = modifyXml
+			result = ModifyXml
 					.modifyNodeValueByTagNameAndAttributeAndAttributeValue(
-							filePath, xmlNodeName, xmlAttributeName,
-							xmlAttributeValue, newValue);
+							filePathChanged, xmlNodeNameChanged,
+							xmlAttributeNameChanged, xmlAttributeValueChanged,
+							newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePath + "文件中，将" + xmlNodeName
-								+ "的文本修改成了了" + newValue + "！");
+						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+								+ xmlNodeNameChanged + "的文本修改成了了"
+								+ newValueChanged + "！");
 				return true;
 			} else {
 				listener.getLogger().println(
@@ -229,7 +269,7 @@ public class MultiChannelPackerBuilder extends Builder {
 			return FormValidation.ok();
 		}
 
-		public boolean isApplicable(Class<? extends AbstractProject> aClass) {
+		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
 			return true;
 		}
 
