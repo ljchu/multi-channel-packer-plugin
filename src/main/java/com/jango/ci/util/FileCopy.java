@@ -186,7 +186,8 @@ public class FileCopy {
 			}
 			File file = new File(aString.substring(0, aInteger));
 			mkDir(file);
-			return file;
+			File newFile = new File(aString);
+			return newFile;
 		}
 
 	}
