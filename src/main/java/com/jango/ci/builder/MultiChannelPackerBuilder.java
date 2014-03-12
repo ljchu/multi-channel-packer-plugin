@@ -11,6 +11,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import com.jango.ci.util.FileCopy;
 import com.jango.ci.util.ModifyXml;
 import com.jango.ci.util.ReplaceStrInFile;
 import com.jango.ci.util.EnvResolver;
@@ -47,6 +49,7 @@ public class MultiChannelPackerBuilder extends Builder {
 		choiceList.put("根据节点名称、属性名称，修改属性值", 3);
 		choiceList.put("根据节点名称、属性名称、属性值，修改属性值", 4);
 		choiceList.put("根据节点名称、属性名称、属性值，修改节点文本", 5);
+		choiceList.put("文件拷贝", 6);
 	}
 
 	@DataBoundConstructor
@@ -120,13 +123,13 @@ public class MultiChannelPackerBuilder extends Builder {
 		String xmlAttributeValueChanged = EnvResolver.changeStringWithEnv(
 				envVars, xmlAttributeValue);
 
-		if (!new File(filePathChanged).exists()) {
-			listener.getLogger().println("[ERROR]:文件不存在！");
-			return false;
-		}
 		boolean result = false;
 		switch (choiceList.get(choice)) {
 		case 1: {
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println("[ERROR]:文件不存在！");
+				return false;
+			}
 			listener.getLogger().println("[INFO]:文本替换:");
 			ReplaceStrInFile re = new ReplaceStrInFile();
 			if (stringToFindChanged.equals(null)
@@ -147,6 +150,10 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 2: {
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println("[ERROR]:文件不存在！");
+				return false;
+			}
 			listener.getLogger().println("[INFO]:根据节点名称，修改节点文本:");
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")) {
@@ -166,6 +173,10 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 3: {
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println("[ERROR]:文件不存在！");
+				return false;
+			}
 			listener.getLogger().println("[INFO]:根据节点名称、属性名称，修改属性值:");
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
@@ -188,6 +199,10 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 4: {
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println("[ERROR]:文件不存在！");
+				return false;
+			}
 			listener.getLogger().println("[INFO]:根据节点名称、属性名称、属性值，修改属性值:");
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
@@ -214,6 +229,10 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 5: {
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println("[ERROR]:文件不存在！");
+				return false;
+			}
 			listener.getLogger().println("[INFO]:根据节点名称、属性名称、属性值，修改节点文本:");
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
@@ -236,6 +255,24 @@ public class MultiChannelPackerBuilder extends Builder {
 								+ newValueChanged + "！");
 			} else {
 				listener.getLogger().println("[ERROR]:修改XML失败.");
+			}
+			return result;
+		}
+		case 6: {
+			listener.getLogger().println("[INFO]:文件拷贝:");
+			if (newValueChanged.equals(null) || newValueChanged.equals("")) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				return false;
+			}
+			FileCopy fileCopy = new FileCopy();
+			result = fileCopy.copyFile(listener, filePathChanged,
+					newValueChanged);
+			if (result) {
+				listener.getLogger().println(
+						"[INFO]:完成从" + filePathChanged + "到" + newValueChanged
+								+ "的拷贝！");
+			} else {
+				listener.getLogger().println("[ERROR]:拷贝失败.");
 			}
 			return result;
 		}
@@ -269,7 +306,7 @@ public class MultiChannelPackerBuilder extends Builder {
 		public FormValidation doCheckNewValue(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.error("请填需要修改的值.");
+				return FormValidation.error("请根据需要填写内容.");
 			return FormValidation.ok();
 		}
 
