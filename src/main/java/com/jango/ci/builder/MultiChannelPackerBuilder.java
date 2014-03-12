@@ -275,7 +275,7 @@ public class MultiChannelPackerBuilder extends Builder {
 
 		@Override
 		public String getDisplayName() {
-			return "Android Multiple Package.";
+			return "Android Multiple Package";
 		}
 
 		public ListBoxModel doFillChoiceItems() {
