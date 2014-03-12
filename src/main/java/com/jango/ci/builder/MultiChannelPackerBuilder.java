@@ -13,6 +13,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -24,9 +25,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import com.jango.ci.exception.StringIsNullException;
+import com.jango.ci.exception.StringNotFoundException;
+import com.jango.ci.exception.XmlAttributeNoteFoundException;
+import com.jango.ci.exception.XmlNodeNotFoundException;
 import com.jango.ci.util.ModifyXml;
 import com.jango.ci.util.ReplaceStrInFile;
 import com.jango.ci.util.EnvResolver;
+import com.jango.ci.util.RequiredCheck;
 
 /**
  * 
@@ -104,7 +110,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			e.printStackTrace();
 		}
 
-		boolean result = false;
 		String filePathChanged = EnvResolver.changeStringWithEnv(envVars,
 				filePath);
 		String newValueChanged = EnvResolver.changeStringWithEnv(envVars,
@@ -117,92 +122,192 @@ public class MultiChannelPackerBuilder extends Builder {
 				envVars, xmlAttributeName);
 		String xmlAttributeValueChanged = EnvResolver.changeStringWithEnv(
 				envVars, xmlAttributeValue);
-
 		switch (choiceList.get(choice)) {
 		case 1: {
 			ReplaceStrInFile re = new ReplaceStrInFile();
-			result = re.replaceInFile(filePathChanged, stringToFindChanged,
-					newValueChanged);
 
-			if (result) {
-				listener.getLogger().println(
-						"[INFO]:完成文件替换在" + filePathChanged + "文件中，将"
-								+ stringToFindChanged + "字符串替换成了"
-								+ newValueChanged + "！");
-				return true;
-			} else {
-				listener.getLogger().println(
-						"[ERROR]:文件字符串替换出现错误，请检查被修改的文件是否存在及其读写权限！");
+			try {
+				RequiredCheck.checkStringIsNull(filePathChanged);
+				RequiredCheck.checkStringIsNull(stringToFindChanged);
+			} catch (StringIsNullException e) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				e.printStackTrace();
 				return false;
 			}
+
+			try {
+				re.replaceInFile(filePathChanged, stringToFindChanged,
+						newValueChanged);
+			} catch (FileNotFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:文件字符串替换出现错误，请检查被修改的文件\"" + filePathChanged
+								+ "\"是否存在！");
+				e.printStackTrace();
+				return false;
+			} catch (StringNotFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:在文件：\"" + filePathChanged + "\"中没有找到字符串\""
+								+ stringToFindChanged + "\"..");
+				e.printStackTrace();
+				return false;
+			} catch (IOException e) {
+				listener.getLogger().println(
+						"[ERROR]:文件字符串替换出现错误，请检查被修改文件是否具有可读可写权限，或是否被其他程序非法占用！");
+				e.printStackTrace();
+				return false;
+			}
+			listener.getLogger().println(
+					"[INFO]:完成文件替换在" + filePathChanged + "文件中，将"
+							+ stringToFindChanged + "字符串替换成了" + newValueChanged
+							+ "！");
+			return true;
 		}
 		case 2: {
-			result = ModifyXml.modifyNodeTextByTagName(filePathChanged,
-					xmlNodeNameChanged, newValueChanged);
-			if (result) {
-				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
-				return true;
-			} else {
-				listener.getLogger().println(
-						"[ERROR]:节点文本修改出现错误，请检查被修改的文件是否存在及其读写权限！");
+
+			try {
+				RequiredCheck.checkStringIsNull(filePathChanged);
+				RequiredCheck.checkStringIsNull(xmlNodeNameChanged);
+			} catch (StringIsNullException e) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				e.printStackTrace();
 				return false;
 			}
+
+			try {
+				ModifyXml.modifyNodeTextByTagName(filePathChanged,
+						xmlNodeNameChanged, newValueChanged);
+			} catch (XmlNodeNotFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，在文件\"" + filePathChanged
+								+ "\"中没有找到节点\"" + xmlNodeNameChanged + "\"..");
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，请检查文件\"" + filePathChanged
+								+ "\"格式是否正确，文件是否被其他程序占用，以及文件的是否具有可读可写权限..");
+				e.printStackTrace();
+				return false;
+			}
+			listener.getLogger().println(
+					"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+							+ xmlNodeNameChanged + "的文本修改成了了" + newValueChanged
+							+ "！");
+			return true;
 		}
 		case 3: {
-			result = ModifyXml.modifyAttributeValueByTagNameAndAttribute(
-					filePathChanged, xmlNodeNameChanged,
-					xmlAttributeNameChanged, newValueChanged);
-			if (result) {
-				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
-				return true;
-			} else {
-				listener.getLogger().println(
-						"[ERROR]:节点文本修改出现错误，请检查被修改的文件是否存在及其读写权限！");
+
+			try {
+				RequiredCheck.checkStringIsNull(filePathChanged);
+				RequiredCheck.checkStringIsNull(xmlNodeNameChanged);
+				RequiredCheck.checkStringIsNull(xmlAttributeNameChanged);
+			} catch (StringIsNullException e) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				e.printStackTrace();
 				return false;
 			}
+
+			try {
+				ModifyXml.modifyAttributeValueByTagNameAndAttribute(
+						filePathChanged, xmlNodeNameChanged,
+						xmlAttributeNameChanged, newValueChanged);
+			} catch (XmlAttributeNoteFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，在文件\"" + filePathChanged
+								+ "\"中没有找到节点属性\"" + xmlAttributeNameChanged
+								+ "\"..");
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，请检查文件\"" + filePathChanged
+								+ "\"格式是否正确，文件是否被其他程序占用，以及文件的是否具有可读可写权限..");
+				e.printStackTrace();
+				return false;
+			}
+			listener.getLogger().println(
+					"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+							+ xmlNodeNameChanged + "的文本修改成了了" + newValueChanged
+							+ "！");
+			return true;
 		}
 		case 4: {
-			result = ModifyXml
-					.modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
-							filePathChanged, xmlNodeNameChanged,
-							xmlAttributeNameChanged, xmlAttributeValueChanged,
-							newValueChanged);
 
-			if (result) {
-				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
-				return true;
-			} else {
-				listener.getLogger().println(
-						"[ERROR]:节点文本修改出现错误，请检查被修改的文件是否存在及其读写权限！");
+			try {
+				RequiredCheck.checkStringIsNull(filePathChanged);
+				RequiredCheck.checkStringIsNull(xmlNodeNameChanged);
+				RequiredCheck.checkStringIsNull(xmlAttributeNameChanged);
+				RequiredCheck.checkStringIsNull(xmlAttributeValueChanged);
+			} catch (StringIsNullException e) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				e.printStackTrace();
 				return false;
 			}
+
+			try {
+				ModifyXml
+						.modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
+								filePathChanged, xmlNodeNameChanged,
+								xmlAttributeNameChanged,
+								xmlAttributeValueChanged, newValueChanged);
+			} catch (XmlAttributeNoteFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，在文件\"" + filePathChanged
+								+ "\"中没有找到节点属性\"" + xmlAttributeNameChanged
+								+ "\"..");
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，请检查文件\"" + filePathChanged
+								+ "\"格式是否正确，文件是否被其他程序占用，以及文件的是否具有可读可写权限..");
+				e.printStackTrace();
+				return false;
+			}
+
+			listener.getLogger().println(
+					"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+							+ xmlNodeNameChanged + "的文本修改成了了" + newValueChanged
+							+ "！");
+			return true;
 		}
 		case 5: {
-			result = ModifyXml
-					.modifyNodeValueByTagNameAndAttributeAndAttributeValue(
-							filePathChanged, xmlNodeNameChanged,
-							xmlAttributeNameChanged, xmlAttributeValueChanged,
-							newValueChanged);
-			if (result) {
-				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
-				return true;
-			} else {
-				listener.getLogger().println(
-						"[ERROR]:节点文本修改出现错误，请检查被修改的文件是否存在及其读写权限！");
+
+			try {
+				RequiredCheck.checkStringIsNull(filePathChanged);
+				RequiredCheck.checkStringIsNull(xmlNodeNameChanged);
+				RequiredCheck.checkStringIsNull(xmlAttributeNameChanged);
+				RequiredCheck.checkStringIsNull(xmlAttributeValueChanged);
+			} catch (StringIsNullException e) {
+				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				e.printStackTrace();
 				return false;
 			}
+
+			try {
+				ModifyXml
+						.modifyNodeValueByTagNameAndAttributeAndAttributeValue(
+								filePathChanged, xmlNodeNameChanged,
+								xmlAttributeNameChanged,
+								xmlAttributeValueChanged, newValueChanged);
+			} catch (XmlNodeNotFoundException e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，在文件\"" + filePathChanged
+								+ "\"中没有找到节点\"" + xmlNodeNameChanged + "\"..");
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				listener.getLogger().println(
+						"[ERROR]:节点文本修改出现错误，请检查文件\"" + filePathChanged
+								+ "\"格式是否正确，文件是否被其他程序占用，以及文件的是否具有可读可写权限..");
+				e.printStackTrace();
+				return false;
+			}
+			listener.getLogger().println(
+					"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
+							+ xmlNodeNameChanged + "的文本修改成了了" + newValueChanged
+							+ "！");
+			return true;
 		}
 		default:
 			break;
@@ -269,7 +374,8 @@ public class MultiChannelPackerBuilder extends Builder {
 			return FormValidation.ok();
 		}
 
-		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
+		public boolean isApplicable(
+				@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
 			return true;
 		}
 
@@ -294,5 +400,4 @@ public class MultiChannelPackerBuilder extends Builder {
 
 	public static abstract class Entry extends AbstractDescribableImpl<Entry> {
 	}
-
 }

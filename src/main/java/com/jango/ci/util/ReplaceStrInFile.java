@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import com.jango.ci.exception.StringNotFoundException;
+
 /**
  * 
  * @author Jango Chu
@@ -18,6 +20,7 @@ import java.io.OutputStreamWriter;
 public class ReplaceStrInFile {
 	private static BufferedReader bufread;
 	private static int aIndex;
+
 	/**
 	 * 
 	 * @param filename
@@ -40,6 +43,7 @@ public class ReplaceStrInFile {
 		bufread.close();
 		return readStrBuffer.toString();
 	}
+
 	/**
 	 * 
 	 * @param filename
@@ -48,7 +52,7 @@ public class ReplaceStrInFile {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public static boolean writeFile(File filename, String fileContent)
+	public static void writeFile(File filename, String fileContent)
 			throws IOException, FileNotFoundException {
 		OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(
 				filename), "UTF-8");
@@ -57,53 +61,42 @@ public class ReplaceStrInFile {
 		bufferedWriter.write(fileContent);
 		bufferedWriter.close();
 		write.close();
-		return true;
 	}
+
 	/**
 	 * 
 	 * @param filePath
 	 * @param srcString
 	 * @param dstString
 	 * @return
+	 * @throws StringNotFoundException
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
-	public boolean replaceInFile(String filePath, String srcString,
-			String dstString) {
+	public void replaceInFile(String filePath, String srcString,
+			String dstString) throws StringNotFoundException,
+			FileNotFoundException, IOException {
 		File filename = new File(filePath);
 		String bString = null;
-		try {
-			bString = readFile(filename);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return false;
-		}
-
+		bString = readFile(filename);
 		String newString = replace(srcString, dstString, bString);
-		boolean writeResult = false;
-		try {
-			writeResult = writeFile(filename, newString);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		if (writeResult) {
-			return true;
-		}
-		return false;
+		writeFile(filename, newString);
 	}
+
 	/**
 	 * 
 	 * @param from
 	 * @param to
 	 * @param source
 	 * @return
+	 * @throws StringNotFoundException
 	 */
-	public static String replace(String from, String to, String source) {
+	public static String replace(String from, String to, String source)
+			throws StringNotFoundException {
 		if (source == null || from == null || to == null)
 			return null;
 		StringBuffer bf = new StringBuffer("");
+		String bakString = source;
 		aIndex = -1;
 		while ((aIndex = source.indexOf(from)) != -1) {
 			bf.append(source.substring(0, aIndex) + to);
@@ -111,6 +104,10 @@ public class ReplaceStrInFile {
 			aIndex = source.indexOf(from);
 		}
 		bf.append(source);
-		return bf.toString();
+		String aString = bf.toString();
+		if (aString.equals(bakString)) {
+			throw new StringNotFoundException();
+		}
+		return aString;
 	}
 }

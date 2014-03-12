@@ -11,11 +11,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.jango.ci.exception.XmlAttributeNoteFoundException;
+import com.jango.ci.exception.XmlNodeNotFoundException;
 
 /**
  * 
@@ -31,31 +35,20 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
+	 * @throws XmlNodeNotFoundException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TransformerException
 	 */
-	public static boolean modifyNodeTextByTagName(String filePath,
-			String tagName, String newValue) {
+	public static void modifyNodeTextByTagName(String filePath, String tagName,
+			String newValue) throws XmlNodeNotFoundException, SAXException,
+			IOException, ParserConfigurationException, TransformerException {
 
 		Document document = null;
-		try {
-			document = loadInit(filePath);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (SAXException e) {
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		document = loadInit(filePath);
 		Document aDocument = setNodeTextByTagName(document, tagName, newValue);
-		try {
-			saveXML(aDocument, filePath);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		saveXML(aDocument, filePath);
 	}
 
 	/**
@@ -66,33 +59,23 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
+	 * @throws XmlNodeNotFoundException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TransformerException
 	 */
-	public static boolean modifyNodeValueByTagNameAndAttributeAndAttributeValue(
+	public static void modifyNodeValueByTagNameAndAttributeAndAttributeValue(
 			String filePath, String tagName, String attributName,
-			String attributeValue, String newValue) {
+			String attributeValue, String newValue)
+			throws XmlNodeNotFoundException, SAXException, IOException,
+			ParserConfigurationException, TransformerException {
 
 		Document document = null;
-		try {
-			document = loadInit(filePath);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (SAXException e) {
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		document = loadInit(filePath);
 		Document aDocument = setNodeValueByTagNameAndAttributeAndAttributeValue(
 				document, tagName, attributName, attributeValue, newValue);
-		try {
-			saveXML(aDocument, filePath);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		saveXML(aDocument, filePath);
 	}
 
 	/**
@@ -103,33 +86,23 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TransformerException
 	 */
-	public static boolean modifyAttributeValueByTagNameAndAttribute(
+	public static void modifyAttributeValueByTagNameAndAttribute(
 			String filePath, String tagName, String attributName,
-			String newValue) {
+			String newValue) throws XmlAttributeNoteFoundException,
+			SAXException, IOException, ParserConfigurationException,
+			TransformerException {
 
 		Document document = null;
-		try {
-			document = loadInit(filePath);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (SAXException e) {
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		document = loadInit(filePath);
 		Document aDocument = setAttributeValueByTagNameAndAttribute(document,
 				tagName, attributName, newValue);
-		try {
-			saveXML(aDocument, filePath);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		saveXML(aDocument, filePath);
 	}
 
 	/**
@@ -140,33 +113,23 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TransformerException
 	 */
-	public static boolean modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
+	public static void modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
 			String filePath, String tagName, String attributName,
-			String attributeValue, String newValue) {
+			String attributeValue, String newValue)
+			throws XmlAttributeNoteFoundException, SAXException, IOException,
+			ParserConfigurationException, TransformerException {
 
 		Document document = null;
-		try {
-			document = loadInit(filePath);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (SAXException e) {
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		document = loadInit(filePath);
 		Document aDocument = setAttributeValueByTagNameAndAttributeAndAttributeValue(
 				document, tagName, attributName, attributeValue, newValue);
-		try {
-			saveXML(aDocument, filePath);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		saveXML(aDocument, filePath);
 	}
 
 	/**
@@ -178,10 +141,12 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newAttributeValue
 	 * @return
+	 * @throws XmlNodeNotFoundException
 	 */
 	public static Document setNodeValueByTagNameAndAttributeAndAttributeValue(
 			Document document, String tagName, String attributName,
-			String attributeValue, String newAttributeValue) {
+			String attributeValue, String newAttributeValue)
+			throws XmlNodeNotFoundException {
 		Node aa = getNodeByTagNameAndAttributeAndAttributeValue(document,
 				tagName, attributName, attributeValue);
 		aa.setTextContent(newAttributeValue);
@@ -197,10 +162,12 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newAttributeValue
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Document setAttributeValueByTagNameAndAttributeAndAttributeValue(
 			Document document, String tagName, String attributName,
-			String attributeValue, String newAttributeValue) {
+			String attributeValue, String newAttributeValue)
+			throws XmlAttributeNoteFoundException {
 		Node aa = getAttributeByTagNameAndAttributeAndAttributeValue(document,
 				tagName, attributName, attributeValue);
 		aa.setNodeValue(newAttributeValue);
@@ -215,10 +182,11 @@ public class ModifyXml {
 	 * @param attributName
 	 * @param newAttributeValue
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Document setAttributeValueByTagNameAndAttribute(
 			Document document, String tagName, String attributName,
-			String newAttributeValue) {
+			String newAttributeValue) throws XmlAttributeNoteFoundException {
 		Node aa = getAttributeByTagNameAndAttribute(document, tagName,
 				attributName);
 		aa.setNodeValue(newAttributeValue);
@@ -232,9 +200,10 @@ public class ModifyXml {
 	 * @param tagName
 	 * @param newNodeText
 	 * @return
+	 * @throws XmlNodeNotFoundException
 	 */
 	public static Document setNodeTextByTagName(Document document,
-			String tagName, String newNodeText) {
+			String tagName, String newNodeText) throws XmlNodeNotFoundException {
 		Node aa = getNodeByName(document, tagName);
 		if (aa != null) {
 			aa.setTextContent(newNodeText);
@@ -249,13 +218,15 @@ public class ModifyXml {
 	 * @param document
 	 * @param tagName
 	 * @return
+	 * @throws XmlNodeNotFoundException
 	 */
-	public static Node getNodeByName(Document document, String tagName) {
+	public static Node getNodeByName(Document document, String tagName)
+			throws XmlNodeNotFoundException {
 		NodeList nodeList = document.getElementsByTagName(tagName);
 		if (nodeList.getLength() > 0) {
 			return nodeList.item(0);
 		}
-		return null;
+		throw new XmlNodeNotFoundException();
 	}
 
 	/**
@@ -266,10 +237,11 @@ public class ModifyXml {
 	 * @param attributName
 	 * @param attributeValue
 	 * @return
+	 * @throws XmlNodeNotFoundException
 	 */
 	public static Node getNodeByTagNameAndAttributeAndAttributeValue(
 			Document document, String tagName, String attributName,
-			String attributeValue) {
+			String attributeValue) throws XmlNodeNotFoundException {
 		NodeList nodeList = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			NamedNodeMap oldAttribute = nodeList.item(i).getAttributes();
@@ -282,7 +254,7 @@ public class ModifyXml {
 				}
 			}
 		}
-		return null;
+		throw new XmlNodeNotFoundException();
 	}
 
 	/**
@@ -292,9 +264,11 @@ public class ModifyXml {
 	 * @param tagName
 	 * @param attributName
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Node getAttributeByTagNameAndAttribute(Document document,
-			String tagName, String attributName) {
+			String tagName, String attributName)
+			throws XmlAttributeNoteFoundException {
 		NodeList nodeList = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			NamedNodeMap oldAttribute = nodeList.item(i).getAttributes();
@@ -305,7 +279,7 @@ public class ModifyXml {
 				}
 			}
 		}
-		return null;
+		throw new XmlAttributeNoteFoundException();
 	}
 
 	/**
@@ -316,10 +290,11 @@ public class ModifyXml {
 	 * @param attributName
 	 * @param attributeValue
 	 * @return
+	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Node getAttributeByTagNameAndAttributeAndAttributeValue(
 			Document document, String tagName, String attributName,
-			String attributeValue) {
+			String attributeValue) throws XmlAttributeNoteFoundException {
 		NodeList nodeList = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			NamedNodeMap oldAttribute = nodeList.item(i).getAttributes();
@@ -332,7 +307,7 @@ public class ModifyXml {
 				}
 			}
 		}
-		return null;
+		throw new XmlAttributeNoteFoundException();
 	}
 
 	/**
@@ -358,8 +333,8 @@ public class ModifyXml {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private static Document loadInit(String filePath)
-			throws ParserConfigurationException, SAXException, IOException {
+	private static Document loadInit(String filePath) throws SAXException,
+			IOException, ParserConfigurationException {
 		Document document = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();

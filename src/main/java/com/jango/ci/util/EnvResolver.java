@@ -1,7 +1,11 @@
 package com.jango.ci.util;
 
 import java.util.Map;
-
+/**
+ * Resolve the environment of jenkins.
+ * @author ljchu
+ * 2014-3-11
+ */
 public class EnvResolver {
 
 	private static String left = "${";
@@ -22,7 +26,12 @@ public class EnvResolver {
 	public static void setRight(String right) {
 		EnvResolver.right = right;
 	}
-
+	/**
+	 * 
+	 * @param map
+	 * @param inputString
+	 * @return The String after replace the value whit the environment.
+	 */
 	public static String changeStringWithEnv(Map<?, ?> map, String inputString) {
 		StringBuffer aBuffer = new StringBuffer(inputString);
 		int aIndex = -1;
