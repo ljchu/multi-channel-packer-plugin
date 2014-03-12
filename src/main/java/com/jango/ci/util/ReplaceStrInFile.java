@@ -1,5 +1,7 @@
 package com.jango.ci.util;
 
+import hudson.model.BuildListener;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +22,53 @@ import com.jango.ci.exception.StringNotFoundException;
 public class ReplaceStrInFile {
 	private static BufferedReader bufread;
 	private static int aIndex;
+
+	/**
+	 * 
+	 * @param filePath
+	 * @param srcString
+	 * @param dstString
+	 * @return
+	 * @throws StringNotFoundException
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public boolean replaceInFile(BuildListener listener, String filePath,
+			String srcString, String dstString) {
+		File filename = new File(filePath);
+		String bString = null;
+		try {
+			bString = readFile(filename);
+		} catch (FileNotFoundException e) {
+			listener.getLogger().println(e);
+			return false;
+		} catch (IOException e) {
+			listener.getLogger().println("[ERROR]写文件失败，请检查文件是否具有可读可写权限.");
+			listener.getLogger().println(e);
+			return false;
+		}
+		String newString = null;
+		try {
+			newString = replace(srcString, dstString, bString);
+		} catch (StringNotFoundException e) {
+			listener.getLogger().println("[ERROR]没有查找到字符串.");
+			listener.getLogger().println(e);
+			return false;
+		}
+		if (newString != null) {
+			try {
+				writeFile(filename, newString);
+			} catch (FileNotFoundException e) {
+				listener.getLogger().println(e);
+				return false;
+			} catch (IOException e) {
+				listener.getLogger().println("[ERROR]写文件失败，请检查文件是否具有可读可写权限.");
+				listener.getLogger().println(e);
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * 
@@ -65,26 +114,6 @@ public class ReplaceStrInFile {
 
 	/**
 	 * 
-	 * @param filePath
-	 * @param srcString
-	 * @param dstString
-	 * @return
-	 * @throws StringNotFoundException
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	public void replaceInFile(String filePath, String srcString,
-			String dstString) throws StringNotFoundException,
-			FileNotFoundException, IOException {
-		File filename = new File(filePath);
-		String bString = null;
-		bString = readFile(filename);
-		String newString = replace(srcString, dstString, bString);
-		writeFile(filename, newString);
-	}
-
-	/**
-	 * 
 	 * @param from
 	 * @param to
 	 * @param source
@@ -93,8 +122,9 @@ public class ReplaceStrInFile {
 	 */
 	public static String replace(String from, String to, String source)
 			throws StringNotFoundException {
-		if (source == null || from == null || to == null)
+		if (source == null || from == null || to == null) {
 			return null;
+		}
 		StringBuffer bf = new StringBuffer("");
 		String bakString = source;
 		aIndex = -1;

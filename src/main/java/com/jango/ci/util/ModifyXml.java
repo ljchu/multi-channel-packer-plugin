@@ -1,5 +1,7 @@
 package com.jango.ci.util;
 
+import hudson.model.BuildListener;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -7,6 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -35,20 +38,22 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
-	 * @throws XmlNodeNotFoundException
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws TransformerException
 	 */
-	public static void modifyNodeTextByTagName(String filePath, String tagName,
-			String newValue) throws XmlNodeNotFoundException, SAXException,
-			IOException, ParserConfigurationException, TransformerException {
-
-		Document document = null;
-		document = loadInit(filePath);
-		Document aDocument = setNodeTextByTagName(document, tagName, newValue);
-		saveXML(aDocument, filePath);
+	public static boolean modifyNodeTextByTagName(BuildListener listener,
+			String filePath, String tagName, String newValue) {
+		Document document = loadInit(listener, filePath);
+		if (document != null) {
+			Document aDocument = null;
+			aDocument = setNodeTextByTagName(listener, document, tagName,
+					newValue);
+			if (aDocument != null) {
+				boolean result = saveXML(listener, aDocument, filePath);
+				if (result) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -59,23 +64,25 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
-	 * @throws XmlNodeNotFoundException
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws TransformerException
 	 */
-	public static void modifyNodeValueByTagNameAndAttributeAndAttributeValue(
-			String filePath, String tagName, String attributName,
-			String attributeValue, String newValue)
-			throws XmlNodeNotFoundException, SAXException, IOException,
-			ParserConfigurationException, TransformerException {
+	public static boolean modifyNodeValueByTagNameAndAttributeAndAttributeValue(
+			BuildListener listener, String filePath, String tagName,
+			String attributName, String attributeValue, String newValue) {
 
 		Document document = null;
-		document = loadInit(filePath);
-		Document aDocument = setNodeValueByTagNameAndAttributeAndAttributeValue(
-				document, tagName, attributName, attributeValue, newValue);
-		saveXML(aDocument, filePath);
+		document = loadInit(listener, filePath);
+		if (document != null) {
+			Document aDocument = setNodeValueByTagNameAndAttributeAndAttributeValue(
+					listener, document, tagName, attributName, attributeValue,
+					newValue);
+			if (aDocument != null) {
+				boolean result = saveXML(listener, aDocument, filePath);
+				if (result) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -86,23 +93,24 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
-	 * @throws XmlAttributeNoteFoundException
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws TransformerException
 	 */
-	public static void modifyAttributeValueByTagNameAndAttribute(
-			String filePath, String tagName, String attributName,
-			String newValue) throws XmlAttributeNoteFoundException,
-			SAXException, IOException, ParserConfigurationException,
-			TransformerException {
+	public static boolean modifyAttributeValueByTagNameAndAttribute(
+			BuildListener listener, String filePath, String tagName,
+			String attributName, String newValue) {
 
 		Document document = null;
-		document = loadInit(filePath);
-		Document aDocument = setAttributeValueByTagNameAndAttribute(document,
-				tagName, attributName, newValue);
-		saveXML(aDocument, filePath);
+		document = loadInit(listener, filePath);
+		if (document != null) {
+			Document aDocument = setAttributeValueByTagNameAndAttribute(
+					listener, document, tagName, attributName, newValue);
+			if (aDocument != null) {
+				boolean result = saveXML(listener, aDocument, filePath);
+				if (result) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -113,23 +121,25 @@ public class ModifyXml {
 	 * @param attributeValue
 	 * @param newValue
 	 * @return
-	 * @throws XmlAttributeNoteFoundException
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws TransformerException
 	 */
-	public static void modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
-			String filePath, String tagName, String attributName,
-			String attributeValue, String newValue)
-			throws XmlAttributeNoteFoundException, SAXException, IOException,
-			ParserConfigurationException, TransformerException {
+	public static boolean modifyAttributeValueByTagNameAndAttributeAndAttributeValue(
+			BuildListener listener, String filePath, String tagName,
+			String attributName, String attributeValue, String newValue) {
 
 		Document document = null;
-		document = loadInit(filePath);
-		Document aDocument = setAttributeValueByTagNameAndAttributeAndAttributeValue(
-				document, tagName, attributName, attributeValue, newValue);
-		saveXML(aDocument, filePath);
+		document = loadInit(listener, filePath);
+		if (document != null) {
+			Document aDocument = setAttributeValueByTagNameAndAttributeAndAttributeValue(
+					listener, document, tagName, attributName, attributeValue,
+					newValue);
+			if (aDocument != null) {
+				boolean result = saveXML(listener, aDocument, filePath);
+				if (result) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -144,11 +154,20 @@ public class ModifyXml {
 	 * @throws XmlNodeNotFoundException
 	 */
 	public static Document setNodeValueByTagNameAndAttributeAndAttributeValue(
-			Document document, String tagName, String attributName,
-			String attributeValue, String newAttributeValue)
-			throws XmlNodeNotFoundException {
-		Node aa = getNodeByTagNameAndAttributeAndAttributeValue(document,
-				tagName, attributName, attributeValue);
+			BuildListener listener, Document document, String tagName,
+			String attributName, String attributeValue, String newAttributeValue) {
+		Node aa = null;
+		try {
+			aa = getNodeByTagNameAndAttributeAndAttributeValue(document,
+					tagName, attributName, attributeValue);
+		} catch (XmlNodeNotFoundException e) {
+			listener.getLogger().println(
+					"[ERROR]没有找到匹配节点名称为\"" + tagName + "\",属性名称为\""
+							+ attributName + "\"且属性值为\"" + attributeValue
+							+ "\"的节点");
+			listener.getLogger().println(e);
+			return null;
+		}
 		aa.setTextContent(newAttributeValue);
 		return document;
 	}
@@ -165,11 +184,20 @@ public class ModifyXml {
 	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Document setAttributeValueByTagNameAndAttributeAndAttributeValue(
-			Document document, String tagName, String attributName,
-			String attributeValue, String newAttributeValue)
-			throws XmlAttributeNoteFoundException {
-		Node aa = getAttributeByTagNameAndAttributeAndAttributeValue(document,
-				tagName, attributName, attributeValue);
+			BuildListener listener, Document document, String tagName,
+			String attributName, String attributeValue, String newAttributeValue) {
+		Node aa = null;
+		try {
+			aa = getAttributeByTagNameAndAttributeAndAttributeValue(document,
+					tagName, attributName, attributeValue);
+		} catch (XmlAttributeNoteFoundException e) {
+			listener.getLogger().println(
+					"[ERROR]没有找到匹配节点名称为\"" + tagName + "\",属性名称为\""
+							+ attributName + "\"且属性值为\"" + attributeValue
+							+ "\"的属性");
+			listener.getLogger().println(e);
+			return null;
+		}
 		aa.setNodeValue(newAttributeValue);
 		return document;
 	}
@@ -185,10 +213,19 @@ public class ModifyXml {
 	 * @throws XmlAttributeNoteFoundException
 	 */
 	public static Document setAttributeValueByTagNameAndAttribute(
-			Document document, String tagName, String attributName,
-			String newAttributeValue) throws XmlAttributeNoteFoundException {
-		Node aa = getAttributeByTagNameAndAttribute(document, tagName,
-				attributName);
+			BuildListener listener, Document document, String tagName,
+			String attributName, String newAttributeValue) {
+		Node aa = null;
+		try {
+			aa = getAttributeByTagNameAndAttribute(document, tagName,
+					attributName);
+		} catch (XmlAttributeNoteFoundException e) {
+			listener.getLogger().println(
+					"[ERROR]没有找到匹配节点名称\"" + tagName + "\",属性名称为\""
+							+ attributName + "\"的属性");
+			listener.getLogger().println(e);
+			return null;
+		}
 		aa.setNodeValue(newAttributeValue);
 		return document;
 	}
@@ -202,14 +239,19 @@ public class ModifyXml {
 	 * @return
 	 * @throws XmlNodeNotFoundException
 	 */
-	public static Document setNodeTextByTagName(Document document,
-			String tagName, String newNodeText) throws XmlNodeNotFoundException {
-		Node aa = getNodeByName(document, tagName);
-		if (aa != null) {
-			aa.setTextContent(newNodeText);
-			return document;
+	public static Document setNodeTextByTagName(BuildListener listener,
+			Document document, String tagName, String newNodeText) {
+		Node aa = null;
+		try {
+			aa = getNodeByName(document, tagName);
+		} catch (XmlNodeNotFoundException e) {
+			listener.getLogger().println(
+					"[ERROR]没有找到名称为：\"" + tagName + "\"的节点。");
+			listener.getLogger().println(e);
+			return null;
 		}
-		return null;
+		aa.setTextContent(newNodeText);
+		return document;
 	}
 
 	/**
@@ -316,13 +358,25 @@ public class ModifyXml {
 	 * @param filePath
 	 * @throws TransformerException
 	 */
-	private static void saveXML(Document document, String filePath)
-			throws TransformerException {
+	private static boolean saveXML(BuildListener listener, Document document,
+			String filePath) {
 		TransformerFactory tFactory = TransformerFactory.newInstance();
-		Transformer transformer = tFactory.newTransformer();
+		Transformer transformer = null;
+		try {
+			transformer = tFactory.newTransformer();
+		} catch (TransformerConfigurationException e) {
+			listener.getLogger().println(e);
+			return false;
+		}
 		DOMSource source = new DOMSource(document);
 		StreamResult result = new StreamResult(new File(filePath));
-		transformer.transform(source, result);
+		try {
+			transformer.transform(source, result);
+		} catch (TransformerException e) {
+			listener.getLogger().println(e);
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -333,12 +387,25 @@ public class ModifyXml {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private static Document loadInit(String filePath) throws SAXException,
-			IOException, ParserConfigurationException {
+	private static Document loadInit(BuildListener listener, String filePath) {
 		Document document = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		document = builder.parse(new File(filePath));
+		DocumentBuilder builder = null;
+		try {
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			return document;
+		}
+		try {
+			document = builder.parse(new File(filePath));
+		} catch (SAXException e) {
+			e.printStackTrace();
+			return document;
+		} catch (IOException e) {
+			listener.getLogger().println(e);
+			return document;
+		}
 		document.normalize();
 		return document;
 	}
