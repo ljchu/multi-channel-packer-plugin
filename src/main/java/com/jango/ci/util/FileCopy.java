@@ -19,6 +19,15 @@ public class FileCopy {
 	 */
 	public boolean copyFile(BuildListener listener, String srcPath,
 			String targetPath) {
+		if (srcPath.equals("/")) {
+			listener.getLogger().println(
+					"[ERROR]:The folder:" + srcPath + "is a root path");
+			return false;
+		}else if(srcPath.length() < 4 && !srcPath.substring(0).equals("/")) {
+			listener.getLogger().println(
+					"[ERROR]:The folder:" + srcPath + "is a root path");
+			return false;
+		}
 		File srcFile = new File(srcPath);
 		File targetFile = new File(targetPath);
 		if (srcFile.exists()) {
@@ -52,8 +61,8 @@ public class FileCopy {
 							return false;
 						}
 						listener.getLogger().println(
-								"[INFO]:cover the file:" + targetPath + " with:"
-										+ srcPath);
+								"[INFO]:cover the file:" + targetPath
+										+ " with:" + srcPath);
 						return true;
 					}
 				} else {
@@ -62,29 +71,34 @@ public class FileCopy {
 						copyFileToFileForChannel(srcFile, newFile);
 					} catch (Exception e) {
 						listener.getLogger().println(
-								"[ERROR]:Fail to copy the file:" + srcPath + " to:" + targetPath);
+								"[ERROR]:Fail to copy the file:" + srcPath
+										+ " to:" + targetPath);
 						e.printStackTrace();
 						return false;
 					}
 					listener.getLogger().println(
-							"[INFO]:Copy the file:" + srcPath + " to:" + targetPath);
+							"[INFO]:Copy the file:" + srcPath + " to:"
+									+ targetPath);
 					return true;
 				}
 			} else if (targetFile.isFile()) {
 				listener.getLogger().println(
-						"[ERROR]:Can not copy a folder :" + srcPath + " to a file:" + targetPath);
+						"[ERROR]:Can not copy a folder :" + srcPath
+								+ " to a file:" + targetPath);
 				return false;
 			} else {
 				try {
 					copyDirectiory(srcPath, targetPath);
 				} catch (Exception e) {
 					listener.getLogger().println(
-							"[ERROR]:Fail to copy the folder:" + srcPath + " to the folder:" + targetPath);
+							"[ERROR]:Fail to copy the folder:" + srcPath
+									+ " to the folder:" + targetPath);
 					e.printStackTrace();
 					return false;
 				}
 				listener.getLogger().println(
-						"[INFO]:Copy the folder:" + srcPath + " to the folder:" + targetPath);
+						"[INFO]:Copy the folder:" + srcPath + " to the folder:"
+								+ targetPath);
 				return true;
 			}
 		} else {
@@ -154,6 +168,7 @@ public class FileCopy {
 			}
 		}
 	}
+
 	/**
 	 * 
 	 * @param srcPath
@@ -188,6 +203,7 @@ public class FileCopy {
 			return newFile;
 		}
 	}
+
 	/**
 	 * 
 	 * @param file
