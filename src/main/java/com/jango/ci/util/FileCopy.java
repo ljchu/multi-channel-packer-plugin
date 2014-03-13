@@ -180,11 +180,13 @@ public class FileCopy {
 				}
 			}
 			File file = new File(aString.substring(0, aInteger));
-			mkDir(file);
 			File newFile = new File(aString);
+			if (aInteger <= 2) {
+				return newFile;
+			}
+			mkDir(file);
 			return newFile;
 		}
-
 	}
 	/**
 	 * 
