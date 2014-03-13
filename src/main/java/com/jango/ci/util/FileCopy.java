@@ -32,13 +32,13 @@ public class FileCopy {
 							copyFileToFileForChannel(srcFile, newTargetFile);
 						} catch (Exception e) {
 							listener.getLogger().println(
-									"[ERROR]Fail to copy" + srcPath
+									"[ERROR]:Fail to copy" + srcPath
 											+ " to folder:" + targetPath);
 							e.printStackTrace();
 							return false;
 						}
 						listener.getLogger().println(
-								"[INFO]Copy the file:" + srcPath + " to:"
+								"[INFO]:Copy the file:" + srcPath + " to:"
 										+ targetPath);
 						return true;
 					} else {
@@ -46,13 +46,13 @@ public class FileCopy {
 							copyFileToFileForChannel(srcFile, targetFile);
 						} catch (Exception e) {
 							listener.getLogger().println(
-									"[ERROR] Fail to cover the file:"
+									"[ERROR]: Fail to cover the file:"
 											+ targetPath + " with:" + srcPath);
 							e.printStackTrace();
 							return false;
 						}
 						listener.getLogger().println(
-								"[INFO]cover the file:" + targetPath + " with:"
+								"[INFO]:cover the file:" + targetPath + " with:"
 										+ srcPath);
 						return true;
 					}
@@ -62,33 +62,33 @@ public class FileCopy {
 						copyFileToFileForChannel(srcFile, newFile);
 					} catch (Exception e) {
 						listener.getLogger().println(
-								"[ERROR]Fail to copy the file:" + srcPath + " to:" + targetPath);
+								"[ERROR]:Fail to copy the file:" + srcPath + " to:" + targetPath);
 						e.printStackTrace();
 						return false;
 					}
 					listener.getLogger().println(
-							"[INFO]Copy the file:" + srcPath + " to:" + targetPath);
+							"[INFO]:Copy the file:" + srcPath + " to:" + targetPath);
 					return true;
 				}
 			} else if (targetFile.isFile()) {
 				listener.getLogger().println(
-						"[ERROR]Can not copy a folder :" + srcPath + " to a file:" + targetPath);
+						"[ERROR]:Can not copy a folder :" + srcPath + " to a file:" + targetPath);
 				return false;
 			} else {
 				try {
 					copyDirectiory(srcPath, targetPath);
 				} catch (Exception e) {
 					listener.getLogger().println(
-							"[ERROR]Fail to copy the folder:" + srcPath + " to the folder:" + targetPath);
+							"[ERROR]:Fail to copy the folder:" + srcPath + " to the folder:" + targetPath);
 					e.printStackTrace();
 					return false;
 				}
 				listener.getLogger().println(
-						"[INFO]Copy the folder:" + srcPath + " to the folder:" + targetPath);
+						"[INFO]:Copy the folder:" + srcPath + " to the folder:" + targetPath);
 				return true;
 			}
 		} else {
-			listener.getLogger().println("[ERROR]Path not exist:" + srcPath);
+			listener.getLogger().println("[ERROR]:Path not exist:" + srcPath);
 			return false;
 		}
 	}

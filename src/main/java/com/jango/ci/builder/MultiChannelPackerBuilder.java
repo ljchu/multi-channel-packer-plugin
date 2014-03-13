@@ -321,7 +321,7 @@ public class MultiChannelPackerBuilder extends Builder {
 					newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:Copy" + filePathChanged + "to"
+						"[INFO]:Finished copy" + filePathChanged + " to"
 								+ newValueChanged + ".");
 			} else {
 				listener.getLogger().println("[ERROR]:Copy file failure.");
