@@ -134,16 +134,15 @@ public class MultiChannelPackerBuilder extends Builder {
 				envVars, xmlAttributeName);
 		String xmlAttributeValueChanged = EnvResolver.changeStringWithEnv(
 				envVars, xmlAttributeValue);
-
+		if (!new File(filePathChanged).exists()) {
+			listener.getLogger().println(
+					"[ERROR]:Sourece file\"" + filePathChanged
+							+ "\" dose not exist.");
+			return false;
+		}
 		boolean result = false;
 		switch (choiceList.get(choice)) {
 		case 1: {
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Sourece file\"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 1));
@@ -167,12 +166,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 2: {
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Sourece file\"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 2));
@@ -197,12 +190,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 3: {
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Sourece file\"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 3));
@@ -231,12 +218,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 4: {
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Sourece file\"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 4));
@@ -269,12 +250,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			return result;
 		}
 		case 5: {
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Sourece file\"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 5));
@@ -310,12 +285,6 @@ public class MultiChannelPackerBuilder extends Builder {
 			listener.getLogger().println(
 					"[INFO]:"
 							+ CollectionUtil.getKeyOfMapByValue(choiceList, 6));
-			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println(
-						"[ERROR]:Path \"" + filePathChanged
-								+ "\" dose not exist.");
-				return false;
-			}
 			FileCopy fileCopy = new FileCopy();
 			result = fileCopy.copyFile(listener, filePathChanged,
 					newValueChanged);
@@ -393,7 +362,8 @@ public class MultiChannelPackerBuilder extends Builder {
 		public FormValidation doCheckStringToFind(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.warning("Fill this with a string in the file,if required.");
+				return FormValidation
+						.warning("Fill this with a string in the file,if required.");
 			return FormValidation.ok();
 		}
 
@@ -421,7 +391,6 @@ public class MultiChannelPackerBuilder extends Builder {
 				throws FormException {
 			return super.configure(req, formData);
 		}
-
 	}
 
 	public static abstract class Entry extends AbstractDescribableImpl<Entry> {
