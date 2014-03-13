@@ -386,14 +386,14 @@ public class MultiChannelPackerBuilder extends Builder {
 				ServletException {
 			if (value.length() == 0)
 				return FormValidation
-						.warning("Fill this with the value of an attribute in the XML file,if required. ");
+						.warning("Fill this with the value of an attribute in the XML file,if required.");
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckStringToFind(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.warning("如若选择\"文本替换\"，请填写需要查找的字符串.");
+				return FormValidation.warning("Fill this with a string in the file,if required.");
 			return FormValidation.ok();
 		}
 
@@ -404,7 +404,7 @@ public class MultiChannelPackerBuilder extends Builder {
 
 		@Override
 		public String getDisplayName() {
-			return "Multiple Channel Packer";
+			return "Invoke multi-channel Packer";
 		}
 
 		public ListBoxModel doFillChoiceItems() {
