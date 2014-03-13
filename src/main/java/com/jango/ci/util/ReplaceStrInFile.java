@@ -43,7 +43,7 @@ public class ReplaceStrInFile {
 			listener.getLogger().println(e);
 			return false;
 		} catch (IOException e) {
-			listener.getLogger().println("[ERROR]写文件失败，请检查文件是否具有可读可写权限.");
+			listener.getLogger().println("[ERROR]Fail to read the file:"+filePath);
 			listener.getLogger().println(e);
 			return false;
 		}
@@ -51,7 +51,7 @@ public class ReplaceStrInFile {
 		try {
 			newString = replace(srcString, dstString, bString);
 		} catch (StringNotFoundException e) {
-			listener.getLogger().println("[ERROR]没有查找到字符串.");
+			listener.getLogger().println("[ERROR]String not found");
 			listener.getLogger().println(e);
 			return false;
 		}
@@ -62,7 +62,7 @@ public class ReplaceStrInFile {
 				listener.getLogger().println(e);
 				return false;
 			} catch (IOException e) {
-				listener.getLogger().println("[ERROR]写文件失败，请检查文件是否具有可读可写权限.");
+				listener.getLogger().println("[ERROR]Fail to write the file:"+filePath);
 				listener.getLogger().println(e);
 				return false;
 			}

@@ -1,23 +1,23 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" >
-  <f:entry title="源路径" field="filePath">
+  <f:entry title="All:Source File Path:" field="filePath">
     <f:textbox />
   </f:entry>
-  <f:entry title="方法选择" field="choice">
+  <f:entry title="Choice a method:" field="choice">
         <f:select/>
     </f:entry>
-  <f:entry title="节点名称" field="xmlNodeName">
+  <f:entry title="XML:Element Name:" field="xmlNodeName">
     <f:textbox />
   </f:entry>
-  <f:entry title="属性名称" field="xmlAttributeName">
+  <f:entry title="XML:Attribute Name:" field="xmlAttributeName">
     <f:textbox />
   </f:entry>
-    <f:entry title="属性值" field="xmlAttributeValue">
+    <f:entry title="XML:Attribute Value:" field="xmlAttributeValue">
     <f:textbox />
   </f:entry>
-  <f:entry title="需要替换的字符串" field="stringToFind">
+  <f:entry title="Replace:Find a String:" field="stringToFind">
     <f:textbox />
   </f:entry>
-    <f:entry title="目标值" field="newValue">
+    <f:entry title="All:Target Value:" field="newValue">
     <f:textbox />
   </f:entry>
       

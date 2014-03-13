@@ -9,6 +9,6 @@ public class StringNotFoundException extends Exception {
 	 * 
 	 */
 	public StringNotFoundException() {
-		System.out.print("String not found!字符串没有找到！");
+		System.out.print("String not found!");
 	}
 }

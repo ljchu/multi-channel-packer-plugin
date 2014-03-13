@@ -9,6 +9,6 @@ public class XmlNodeNotFoundException extends Exception {
 	 * 
 	 */
 	public XmlNodeNotFoundException() {
-		System.out.print("Xml Node not found!没有找到XML节点！");
+		System.out.print("Xml Node not found!");
 	}
 }

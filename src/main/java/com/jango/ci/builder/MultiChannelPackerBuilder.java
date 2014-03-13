@@ -24,6 +24,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import com.jango.ci.util.CollectionUtil;
 import com.jango.ci.util.FileCopy;
 import com.jango.ci.util.ModifyXml;
 import com.jango.ci.util.ReplaceStrInFile;
@@ -36,20 +37,31 @@ import com.jango.ci.util.EnvResolver;
  */
 public class MultiChannelPackerBuilder extends Builder {
 	public final String filePath;
-	public final String stringToFind;// 查找字符串
-	public final String xmlNodeName;// 节点名称
-	public final String xmlAttributeName;// 属性名称
-	public final String xmlAttributeValue;// 属性值
+	public final String stringToFind;
+	public final String xmlNodeName;
+	public final String xmlAttributeName;
+	public final String xmlAttributeValue;
 	public final String newValue;
 	public final String choice;
 	static HashMap<String, Integer> choiceList = new HashMap<String, Integer>();
-	{
-		choiceList.put("文本替换", 1);
-		choiceList.put("根据节点名称，修改节点文本", 2);
-		choiceList.put("根据节点名称、属性名称，修改属性值", 3);
-		choiceList.put("根据节点名称、属性名称、属性值，修改属性值", 4);
-		choiceList.put("根据节点名称、属性名称、属性值，修改节点文本", 5);
-		choiceList.put("文件拷贝", 6);
+	static {
+		choiceList
+				.put("Replace:Replace a String find in Source File,with the Target Value",
+						1);
+		choiceList
+				.put("XML:Modify the Node's text which Element-name match the input",
+						2);
+		choiceList
+				.put("XML:Modify the Attribute's Value which Element-name and Attribute-name match the input",
+						3);
+		choiceList
+				.put("XML:Modify the Attribute's Value which Element-name,Attribute-name and Attribute-Value match the input",
+						4);
+		choiceList
+				.put("XML:Modify the Node's text which Element-name,Attribute-name and Attribute-Value match the input",
+						5);
+		choiceList.put(
+				"Copy:Copy from the Source File Path to the Target Value", 6);
 	}
 
 	@DataBoundConstructor
@@ -97,7 +109,8 @@ public class MultiChannelPackerBuilder extends Builder {
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) {
 		if (filePath.equals(null) || filePath.equals("")) {
-			listener.getLogger().println("[ERROR]:文件路径不能为空！");
+			listener.getLogger().println(
+					"[ERROR]:Source File Path should not be empty！");
 			return false;
 		}
 		EnvVars envVars = new EnvVars();
@@ -108,7 +121,6 @@ public class MultiChannelPackerBuilder extends Builder {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		listener.getLogger().println("[INFO]:环境变量转换.");
 
 		String filePathChanged = EnvResolver.changeStringWithEnv(envVars,
 				filePath);
@@ -127,62 +139,80 @@ public class MultiChannelPackerBuilder extends Builder {
 		switch (choiceList.get(choice)) {
 		case 1: {
 			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println("[ERROR]:文件不存在！");
+				listener.getLogger().println(
+						"[ERROR]:Sourece file\"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
-			listener.getLogger().println("[INFO]:文本替换:");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 1));
 			ReplaceStrInFile re = new ReplaceStrInFile();
 			if (stringToFindChanged.equals(null)
 					|| stringToFindChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				listener.getLogger().println(
+						"[ERROR]:String to find should not be empty！");
 				return false;
 			}
 			result = re.replaceInFile(listener, filePathChanged,
 					stringToFindChanged, newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成文件替换在" + filePathChanged + "文件中，将"
-								+ stringToFindChanged + "字符串替换成了"
-								+ newValueChanged + "！");
+						"[INFO]:Finished replace the \"" + stringToFindChanged
+								+ "\" with \"" + newValueChanged
+								+ "\" in file:" + filePathChanged);
 			} else {
-				listener.getLogger().println("[ERROR]:文本替换失败.");
+				listener.getLogger().println("[ERROR]:Fail to replace");
 			}
 			return result;
 		}
 		case 2: {
 			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println("[ERROR]:文件不存在！");
+				listener.getLogger().println(
+						"[ERROR]:Sourece file\"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
-			listener.getLogger().println("[INFO]:根据节点名称，修改节点文本:");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 2));
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				listener.getLogger().println(
+						"[ERROR]:The name of the element should not be empty");
 				return false;
 			}
 			result = ModifyXml.modifyNodeTextByTagName(listener,
 					filePathChanged, xmlNodeNameChanged, newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
+						"[INFO]:Finished modify the text of the element \""
+								+ xmlNodeNameChanged + "\" with\""
+								+ newValueChanged + "\" in the xml file:"
+								+ filePathChanged);
 			} else {
-				listener.getLogger().println("[ERROR]:修改XML失败.");
+				listener.getLogger().println(
+						"[ERROR]:Fail to modify the xml file..");
 			}
 			return result;
 		}
 		case 3: {
 			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println("[ERROR]:文件不存在！");
+				listener.getLogger().println(
+						"[ERROR]:Sourece file\"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
-			listener.getLogger().println("[INFO]:根据节点名称、属性名称，修改属性值:");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 3));
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
 					|| xmlAttributeNameChanged.equals(null)
 					|| xmlAttributeNameChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				listener.getLogger()
+						.println(
+								"[ERROR]:The name of the element and the attribute should not be empty");
 				return false;
 			}
 			result = ModifyXml.modifyAttributeValueByTagNameAndAttribute(
@@ -190,27 +220,35 @@ public class MultiChannelPackerBuilder extends Builder {
 					xmlAttributeNameChanged, newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
+						"[INFO]:Finished modify the value of the attribute \""
+								+ xmlAttributeNameChanged + "\" with\""
+								+ newValueChanged + "\" in the xml file:"
+								+ filePathChanged);
 			} else {
-				listener.getLogger().println("[ERROR]:修改XML失败.");
+				listener.getLogger().println(
+						"[ERROR]:Fail to modify the xml file..");
 			}
 			return result;
 		}
 		case 4: {
 			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println("[ERROR]:文件不存在！");
+				listener.getLogger().println(
+						"[ERROR]:Sourece file\"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
-			listener.getLogger().println("[INFO]:根据节点名称、属性名称、属性值，修改属性值:");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 4));
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
 					|| xmlAttributeNameChanged.equals(null)
 					|| xmlAttributeNameChanged.equals("")
 					|| xmlAttributeValueChanged.equals(null)
 					|| xmlAttributeValueChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				listener.getLogger()
+						.println(
+								"[ERROR]:The name of the element and the attribute ,the value of the attribute should not be empty");
 				return false;
 			}
 			result = ModifyXml
@@ -220,27 +258,35 @@ public class MultiChannelPackerBuilder extends Builder {
 							newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
+						"[INFO]:Finished modify the value of the attribute \""
+								+ xmlAttributeNameChanged + "\" with\""
+								+ newValueChanged + "\" in the xml file:"
+								+ filePathChanged);
 			} else {
-				listener.getLogger().println("[ERROR]:修改XML失败.");
+				listener.getLogger().println(
+						"[ERROR]:Fail to modify the xml file..");
 			}
 			return result;
 		}
 		case 5: {
 			if (!new File(filePathChanged).exists()) {
-				listener.getLogger().println("[ERROR]:文件不存在！");
+				listener.getLogger().println(
+						"[ERROR]:Sourece file\"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
-			listener.getLogger().println("[INFO]:根据节点名称、属性名称、属性值，修改节点文本:");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 5));
 			if (xmlNodeNameChanged.equals(null)
 					|| xmlNodeNameChanged.equals("")
 					|| xmlAttributeNameChanged.equals(null)
 					|| xmlAttributeNameChanged.equals("")
 					|| xmlAttributeValueChanged.equals(null)
 					|| xmlAttributeValueChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+				listener.getLogger()
+						.println(
+								"[ERROR]:The name of the element and the attribute ,the value of the attribute should not be empty");
 				return false;
 			}
 			result = ModifyXml
@@ -250,18 +296,24 @@ public class MultiChannelPackerBuilder extends Builder {
 							newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成节点文本修改在" + filePathChanged + "文件中，将"
-								+ xmlNodeNameChanged + "的文本修改成了了"
-								+ newValueChanged + "！");
+						"[INFO]:Finished modify the text of the element \""
+								+ xmlNodeNameChanged + "\" with\""
+								+ newValueChanged + "\" in the xml file:"
+								+ filePathChanged);
 			} else {
-				listener.getLogger().println("[ERROR]:修改XML失败.");
+				listener.getLogger().println(
+						"[ERROR]:Fail to modify the xml file..");
 			}
 			return result;
 		}
 		case 6: {
-			listener.getLogger().println("[INFO]:文件拷贝:");
-			if (newValueChanged.equals(null) || newValueChanged.equals("")) {
-				listener.getLogger().println("[ERROR]:必填项不能为空！");
+			listener.getLogger().println(
+					"[INFO]:"
+							+ CollectionUtil.getKeyOfMapByValue(choiceList, 6));
+			if (!new File(filePathChanged).exists()) {
+				listener.getLogger().println(
+						"[ERROR]:Path \"" + filePathChanged
+								+ "\" dose not exist.");
 				return false;
 			}
 			FileCopy fileCopy = new FileCopy();
@@ -269,10 +321,10 @@ public class MultiChannelPackerBuilder extends Builder {
 					newValueChanged);
 			if (result) {
 				listener.getLogger().println(
-						"[INFO]:完成从" + filePathChanged + "到" + newValueChanged
-								+ "的拷贝！");
+						"[INFO]:Copy" + filePathChanged + "to"
+								+ newValueChanged + ".");
 			} else {
-				listener.getLogger().println("[ERROR]:拷贝失败.");
+				listener.getLogger().println("[ERROR]:Copy file failure.");
 			}
 			return result;
 		}
@@ -297,16 +349,18 @@ public class MultiChannelPackerBuilder extends Builder {
 		public FormValidation doCheckFilePath(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.error("请选择一个文件！");
+				return FormValidation
+						.error("Please select a text file,of an XML file,of a folder for copy.");
 			if (!(new File(value).exists()))
-				return FormValidation.error("文件\"" + value + "\" 不存在，请检查.");
+				return FormValidation.error("File\"" + value
+						+ "\" dose not exist,please check it.");
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckNewValue(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.error("请根据需要填写内容.");
+				return FormValidation.error("Please set this value.");
 			return FormValidation.ok();
 		}
 
@@ -314,14 +368,16 @@ public class MultiChannelPackerBuilder extends Builder {
 				@QueryParameter String value) throws IOException,
 				ServletException {
 			if (value.length() == 0)
-				return FormValidation.warning("根据选择，填写属性名称.");
+				return FormValidation
+						.warning("Fill this with name of an attribute in the XML file,if required.");
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckXmlNodeName(@QueryParameter String value)
 				throws IOException, ServletException {
 			if (value.length() == 0)
-				return FormValidation.warning("除非是文本替换，否则，请填写此节点名称.");
+				return FormValidation
+						.warning("Fill this with a tag name in the XML file,if required.");
 			return FormValidation.ok();
 		}
 
@@ -329,7 +385,8 @@ public class MultiChannelPackerBuilder extends Builder {
 				@QueryParameter String value) throws IOException,
 				ServletException {
 			if (value.length() == 0)
-				return FormValidation.warning("根据选择，填写属性值，作为xml查找依据.");
+				return FormValidation
+						.warning("Fill this with the value of an attribute in the XML file,if required. ");
 			return FormValidation.ok();
 		}
 
@@ -347,13 +404,16 @@ public class MultiChannelPackerBuilder extends Builder {
 
 		@Override
 		public String getDisplayName() {
-			return "Android Multiple Package";
+			return "Multiple Channel Packer";
 		}
 
 		public ListBoxModel doFillChoiceItems() {
-			return new ListBoxModel().add("文本替换").add("根据节点名称，修改节点文本")
-					.add("根据节点名称、属性名称，修改属性值").add("根据节点名称、属性名称、属性值，修改属性值")
-					.add("根据节点名称、属性名称、属性值，修改节点文本").add("文件拷贝");
+			ListBoxModel aBoxModel = new ListBoxModel();
+			for (int i = 0; i < choiceList.size(); i++) {
+				aBoxModel.add(CollectionUtil.getKeyOfMapByValue(choiceList,
+						i + 1));
+			}
+			return aBoxModel;
 		}
 
 		@Override

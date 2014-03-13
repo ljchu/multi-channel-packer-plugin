@@ -1,12 +1,8 @@
 package com.jango.ci.util;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Date;
@@ -36,26 +32,28 @@ public class FileCopy {
 							copyFileToFileForChannel(srcFile, newTargetFile);
 						} catch (Exception e) {
 							listener.getLogger().println(
-									"[ERROR]拷贝文件" + srcPath + "到文件夹"
-											+ targetPath + "失败.");
+									"[ERROR]Fail to copy" + srcPath
+											+ " to folder:" + targetPath);
 							e.printStackTrace();
 							return false;
 						}
 						listener.getLogger().println(
-								"[INFO]拷贝文件" + srcPath + "到文件夹" + targetPath);
+								"[INFO]Copy the file:" + srcPath + " to:"
+										+ targetPath);
 						return true;
 					} else {
 						try {
 							copyFileToFileForChannel(srcFile, targetFile);
 						} catch (Exception e) {
 							listener.getLogger().println(
-									"[ERROR]覆盖文件" + srcPath + "到文件夹"
-											+ targetPath + "失败.");
+									"[ERROR] Fail to cover the file:"
+											+ targetPath + " with:" + srcPath);
 							e.printStackTrace();
 							return false;
 						}
 						listener.getLogger().println(
-								"[INFO]覆盖文件" + srcPath + "到文件" + targetPath);
+								"[INFO]cover the file:" + targetPath + " with:"
+										+ srcPath);
 						return true;
 					}
 				} else {
@@ -64,35 +62,33 @@ public class FileCopy {
 						copyFileToFileForChannel(srcFile, newFile);
 					} catch (Exception e) {
 						listener.getLogger().println(
-								"[ERROR]拷贝文件" + srcPath + "到" + targetPath
-										+ "失败.");
+								"[ERROR]Fail to copy the file:" + srcPath + " to:" + targetPath);
 						e.printStackTrace();
 						return false;
 					}
 					listener.getLogger().println(
-							"[INFO]拷贝文件" + srcPath + "到" + targetPath);
+							"[INFO]Copy the file:" + srcPath + " to:" + targetPath);
 					return true;
 				}
 			} else if (targetFile.isFile()) {
 				listener.getLogger().println(
-						"[ERROR]无法将文件夹" + srcPath + "拷贝到已存在的文件" + targetPath);
+						"[ERROR]Can not copy a folder :" + srcPath + " to a file:" + targetPath);
 				return false;
 			} else {
 				try {
 					copyDirectiory(srcPath, targetPath);
 				} catch (Exception e) {
 					listener.getLogger().println(
-							"[ERROR]拷贝文件夹" + srcPath + "到文件夹" + targetPath
-									+ "失败.");
+							"[ERROR]Fail to copy the folder:" + srcPath + " to the folder:" + targetPath);
 					e.printStackTrace();
 					return false;
 				}
 				listener.getLogger().println(
-						"[INFO]拷贝文件夹" + srcPath + "到文件夹" + targetPath);
+						"[INFO]Copy the folder:" + srcPath + " to the folder:" + targetPath);
 				return true;
 			}
 		} else {
-			listener.getLogger().println("[ERROR]源文件不存在." + srcPath);
+			listener.getLogger().println("[ERROR]Path not exist:" + srcPath);
 			return false;
 		}
 	}
@@ -141,30 +137,29 @@ public class FileCopy {
 	 */
 	public static void copyDirectiory(String sourceDir, String targetDir)
 			throws Exception {
-		// 新建目标目录
 		(new File(targetDir)).mkdirs();
-		// 获取源文件夹当前下的文件或目录
 		File[] file = (new File(sourceDir)).listFiles();
 		for (int i = 0; i < file.length; i++) {
 			if (file[i].isFile()) {
-				// 源文件
 				File sourceFile = file[i];
-				// 目标文件
 				File targetFile = new File(
 						new File(targetDir).getAbsolutePath() + File.separator
 								+ file[i].getName());
 				copyFileToFileForChannel(sourceFile, targetFile);
 			}
 			if (file[i].isDirectory()) {
-				// 准备复制的源文件夹
 				String dir1 = sourceDir + "/" + file[i].getName();
-				// 准备复制的目标文件夹
 				String dir2 = targetDir + "/" + file[i].getName();
 				copyDirectiory(dir1, dir2);
 			}
 		}
 	}
-
+	/**
+	 * 
+	 * @param srcPath
+	 * @param aString
+	 * @return
+	 */
 	public static File smartCreatDir(String srcPath, String aString) {
 		int len = aString.length();
 		if (aString.substring(len - 1, len).equals("/")
@@ -191,7 +186,10 @@ public class FileCopy {
 		}
 
 	}
-
+	/**
+	 * 
+	 * @param file
+	 */
 	public static void mkDir(File file) {
 		if (file.getParentFile().exists()) {
 			file.mkdir();

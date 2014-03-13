@@ -9,6 +9,6 @@ public class XmlAttributeNoteFoundException extends Exception {
 	 * 
 	 */
 	public XmlAttributeNoteFoundException(){
-		System.out.print("Xml Attribute not found!没有找到XML属性！");
+		System.out.print("Xml Attribute not found!");
 	}
 }

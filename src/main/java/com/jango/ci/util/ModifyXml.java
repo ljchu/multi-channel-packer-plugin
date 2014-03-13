@@ -162,9 +162,11 @@ public class ModifyXml {
 					tagName, attributName, attributeValue);
 		} catch (XmlNodeNotFoundException e) {
 			listener.getLogger().println(
-					"[ERROR]没有找到匹配节点名称为\"" + tagName + "\",属性名称为\""
-							+ attributName + "\"且属性值为\"" + attributeValue
-							+ "\"的节点");
+					"[ERROR]Element dose not found which name match\""
+							+ tagName + "\",attribute name match \""
+							+ attributName
+							+ "\" and the value of the attribute match \""
+							+ attributeValue);
 			listener.getLogger().println(e);
 			return null;
 		}
@@ -192,9 +194,11 @@ public class ModifyXml {
 					tagName, attributName, attributeValue);
 		} catch (XmlAttributeNoteFoundException e) {
 			listener.getLogger().println(
-					"[ERROR]没有找到匹配节点名称为\"" + tagName + "\",属性名称为\""
-							+ attributName + "\"且属性值为\"" + attributeValue
-							+ "\"的属性");
+					"[ERROR]Attribute dose not found which element name match\""
+							+ tagName + "\",attribute name match \""
+							+ attributName
+							+ "\" and the value of the attribute match \""
+							+ attributeValue);
 			listener.getLogger().println(e);
 			return null;
 		}
@@ -221,8 +225,9 @@ public class ModifyXml {
 					attributName);
 		} catch (XmlAttributeNoteFoundException e) {
 			listener.getLogger().println(
-					"[ERROR]没有找到匹配节点名称\"" + tagName + "\",属性名称为\""
-							+ attributName + "\"的属性");
+					"[ERROR]Attribute dose not found which element name match\""
+							+ tagName + "\",attribute name match \""
+							+ attributName);
 			listener.getLogger().println(e);
 			return null;
 		}
@@ -246,7 +251,8 @@ public class ModifyXml {
 			aa = getNodeByName(document, tagName);
 		} catch (XmlNodeNotFoundException e) {
 			listener.getLogger().println(
-					"[ERROR]没有找到名称为：\"" + tagName + "\"的节点。");
+					"[ERROR]Attribute dose not found which element name match\""
+							+ tagName);
 			listener.getLogger().println(e);
 			return null;
 		}
