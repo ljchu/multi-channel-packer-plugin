@@ -1,4 +1,4 @@
-This jenkins plugin is used to modify xml files or any other text files.
+This jenkins plugin(malti-channel-packer-plugin) is used to modify xml files or any other text files.
 You can use it in your build to replace a string in a text file,
 set text for a node or set value for an attribute in an XML file.
 
