@@ -31,6 +31,6 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
- 
+
 	<version>1.0</version>
 </project>
