@@ -12,7 +12,7 @@ import hudson.model.BuildListener;
 public class FileCopy {
 	/**
 	 * 
-	 * @param listener
+	 * @param listener The jenkins buildlistener,be used to print log on screen.
 	 * @param srcPath
 	 * @param targetPath
 	 * @return
