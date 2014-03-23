@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 /**
  * 
- * @author ljchu
+ * @author Jango Chu
  *
  */
 public class CollectionUtil {
-	/**
-	 * 
-	 * @param map
-	 * @param o
-	 * @return
-	 */
+    /**
+     *
+     * @param map
+     * @param aInteger
+     * @return
+     */
 	public static String getKeyOfMapByValue(HashMap<String, Integer> map, Integer aInteger) {
 		Iterator<String> it = map.keySet().iterator();
 		while (it.hasNext()) {

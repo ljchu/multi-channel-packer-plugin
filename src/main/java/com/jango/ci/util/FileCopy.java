@@ -9,6 +9,9 @@ import java.util.Date;
 
 import hudson.model.BuildListener;
 
+/**
+ * @author Jango Chu
+ */
 public class FileCopy {
 	/**
 	 * 

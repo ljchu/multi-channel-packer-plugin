@@ -3,7 +3,7 @@ package com.jango.ci.util;
 import java.util.Map;
 /**
  * Resolve the environment of jenkins.
- * @author ljchu
+ * @author Jango Chu
  * 2014-3-11
  */
 public class EnvResolver {

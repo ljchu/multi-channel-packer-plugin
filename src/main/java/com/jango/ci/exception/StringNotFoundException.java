@@ -1,5 +1,8 @@
 package com.jango.ci.exception;
 
+/**
+ * @author Jango Chu
+ */
 public class StringNotFoundException extends Exception {
 	/**
 	 * 
