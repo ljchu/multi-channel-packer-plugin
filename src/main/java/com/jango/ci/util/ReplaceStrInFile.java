@@ -23,16 +23,14 @@ public class ReplaceStrInFile {
 	private static BufferedReader bufread;
 	private static int aIndex;
 
-	/**
-	 * 
-	 * @param filePath
-	 * @param srcString
-	 * @param dstString
-	 * @return
-	 * @throws StringNotFoundException
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
+    /**
+     *
+     * @param listener
+     * @param filePath
+     * @param srcString
+     * @param dstString
+     * @return
+     */
 	public boolean replaceInFile(BuildListener listener, String filePath,
 			String srcString, String dstString) {
 		File filename = new File(filePath);
